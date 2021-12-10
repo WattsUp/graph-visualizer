@@ -1,0 +1,98 @@
+/****************************** Colors and sizes ******************************/
+
+:root {
+  --color-primary: #52ADE1;
+  --color-secondary: #164693;
+  --color-accent: #33FF33;
+  --color-light: #FFFFFF;
+  --color-dark: #282828;
+  --color-primary-d10: #4A9CCB;
+  --color-primary-d50: #295771;
+  --color-primary-d80: #10232D;
+  --color-dark-b10: #3D3D3D;
+  --color-dark-b20: #535353;
+  --color-dark-b50: #949494;
+}
+
+html {
+  font-size: 16px;
+  word-break: break-word;
+  background: var(--color-dark);
+  color: var(--color-light);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
+  font-family: quicksand;
+  margin: 16px;
+}
+
+.background-accent {
+  background: var(--color-accent);
+}
+
+.background-dark {
+  background: var(--color-dark);
+}
+
+.background-light {
+  background: var(--color-light);
+}
+
+.background-primary {
+  background: var(--color-primary);
+}
+
+.background-secondary {
+  background: var(--color-secondary);
+}
+
+.color-accent {
+  color: var(--color-accent);
+}
+
+.color-dark {
+  color: var(--color-dark);
+}
+
+.color-light {
+  color: var(--color-light);
+}
+
+.color-primary {
+  color: var(--color-primary);
+}
+
+.color-secondary {
+  color: var(--color-secondary);
+}
+
+* {
+  margin: 0;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td, th {
+  width: 20px;
+  height: 20px;
+  border: 1px solid white;
+  padding: 0;
+  text-align: center;
+}
+
+canvas {
+  width: 500px;
+}

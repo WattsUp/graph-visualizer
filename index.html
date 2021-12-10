@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Graph Theory Visualizer</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link rel='stylesheet' type='text/css' media='screen' href='index.css'>
+  <script src='index.js'></script>
+</head>
+
+<body>
+  <h1>Graph Theory Visualizer</h1>
+  <p>
+    n=<input type="number" id="size" min="1" max="50" value="4" oninput="updateSize()">
+    <input type="button" onclick="updateSize()" value="Random">
+  </p>
+  <table id="matrix">
+  </table>
+  <canvas width="1000" height="1000" id="canvas"></canvas>
+</body>
+
+</html>
