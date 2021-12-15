@@ -11,6 +11,7 @@ let modeCircle = true;
 let interval = 0.1;
 
 function updateSize() {
+  modeCircle = !document.getElementById('mode').checked;
   let n = document.getElementById('size').value;
   matrix = [];
   r = [];
@@ -54,6 +55,10 @@ function updateSize() {
     matrix[b][a] = matrix[a][b];
     for (let ii of components[i]) components[0].push(ii);
   }
+  // matrix = [[0, 1, 1], [1, 0, 1], [1, 1, 0]];
+  // r = [{x: -1, y: 0}, {x: 0, y: 0}, {x: 1, y: -0.06}];
+  // v = [{x: -1, y: 0}, {x: 0, y: 0}, {x: 1, y: 0}];
+  // c = [0, 0, 0];
   updateTable();
   computeEigenvalue();
   draw();
@@ -222,7 +227,8 @@ function rToCtx(x) {
   return (x / 2 * (1 - radius * 6) + 0.5) * resolution;
 }
 
-function drawEdge(ctx, a, b, offset) {
+function drawEdge(ctx, a, b, offset, n) {
+  ctx.strokeStyle = 'white';
   ctx.beginPath();
   let ax = rToCtx(r[a].x);
   let ay = rToCtx(r[a].y);
@@ -235,7 +241,7 @@ function drawEdge(ctx, a, b, offset) {
     by = rToCtx(rCircle[b].y);
   }
   if (a == b) {
-    let radius = r_ctx * (offset / 2 + 1);
+    let rNew = r_ctx * (offset / 2 + 1);
     let dx = r[a].x;
     let dy = r[a].y;
     if (modeCircle) {
@@ -245,22 +251,60 @@ function drawEdge(ctx, a, b, offset) {
     let norm = Math.sqrt(dx * dx + dy * dy);
     dx = dx / norm;
     dy = dy / norm;
-    ax += dx * radius;
-    ay += dy * radius;
-    ctx.arc(ax, ay, radius, 0, 2 * Math.PI, false);
+    ax += dx * rNew;
+    ay += dy * rNew;
+    ctx.arc(ax, ay, rNew, 0, 2 * Math.PI, false);
   } else {
+    let arc = null;
     let dx = bx - ax;
     let dy = by - ay;
     let norm = Math.sqrt(dx * dx + dy * dy);
     if (norm == 0) return;
+    for (let i = 0; i < n; ++i) {
+      if (i == a || i == b) continue;
+      let cx = rToCtx(r[i].x);
+      let cy = rToCtx(r[i].y);
+      if (modeCircle) {
+        cx = rToCtx(rCircle[i].x);
+        cy = rToCtx(rCircle[i].y);
+      }
+      let lineDistance = (dx * (ay - cy) - (ax - cx) * dy) / norm;
+      if (Math.abs(lineDistance) > r_ctx * 1.25) continue;
+      let aDistance =
+          Math.sqrt(Math.pow((ax - cx), 2) + Math.pow((ay - cy), 2));
+      if (aDistance > norm) continue;
+      let bDistance =
+          Math.sqrt(Math.pow((bx - cx), 2) + Math.pow((by - cy), 2));
+      if (bDistance > norm) continue;
+      let d = r_ctx * 1.25;
+      if (Math.sign(lineDistance) == 1) d = -d;
+      arc = {x: cx + dy / norm * d, y: cy - dx / norm * d};
+      // ctx.strokeStyle =
+      //     tinycolor
+      //         .fromRatio({h: 0, s: (1 - Math.abs(lineDistance) / r_ctx), v:
+      //         1}) .toHexString();
+      break;
+    }
     dx = dx / norm;
     dy = dy / norm;
-    ax += dy * r_ctx * offset / 3;
-    ay -= dx * r_ctx * offset / 3;
-    bx += dy * r_ctx * offset / 3;
-    by -= dx * r_ctx * offset / 3;
-    ctx.moveTo(ax, ay);
-    ctx.lineTo(bx, by);
+    offset = r_ctx * offset / 3;
+    ax += dy * offset;
+    ay -= dx * offset;
+    bx += dy * offset;
+    by -= dx * offset;
+    if (arc == null) {
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+    } else {
+      arc.x += dy * offset;
+      arc.y -= dx * offset;
+      let points = [ax, ay, arc.x, arc.y, bx, by];
+      let tension = 0.5;
+      ctx.moveTo(ax, ay);
+      ctx.curve(points, tension);
+      // ctx.lineTo(arc.x, arc.y);
+      // ctx.lineTo(bx, by);
+    }
   }
   ctx.stroke();
 }
@@ -272,21 +316,21 @@ function draw() {
   ctx.fillStyle = '#282828';
   ctx.fillRect(0, 0, resolution, resolution);
   let n = matrix.length;
-  ctx.strokeStyle = 'white';
   ctx.save();
   ctx.lineWidth = r_ctx / 6;
   // Draw edges
   for (let i = 0; i < n; ++i) {
     for (let ii = i; ii < n; ++ii) {
       if (i == ii) {
-        for (let k = 0; k < matrix[i][ii] / 2; ++k) drawEdge(ctx, i, ii, k);
+        for (let k = 0; k < matrix[i][ii] / 2; ++k) drawEdge(ctx, i, ii, k, n);
       } else {
         let offset = (matrix[i][ii] - 1) / 2;
         for (let k = 0; k < matrix[i][ii]; ++k)
-          drawEdge(ctx, i, ii, k - offset);
+          drawEdge(ctx, i, ii, k - offset, n);
       }
     }
   }
+  ctx.strokeStyle = 'white';
 
   // Draw vertices
   ctx.font = '40px Serif';
