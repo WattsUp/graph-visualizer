@@ -7,14 +7,26 @@
   <title>Graph Theory Visualizer</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel='stylesheet' type='text/css' media='screen' href='index.css'>
+  <script src="tinycolor.js"></script>
   <script src='index.js'></script>
 </head>
 
 <body>
-  <h1>Graph Theory Visualizer</h1>
+  <h1>Graph Theory Visualizer
+    <label class="switch">
+      <input type="checkbox" oninput="toggleMode(this)">
+      <span class="slider round"></span>
+    </label>
+  </h1>
   <p>
-    n=<input type="number" id="size" min="1" max="50" value="20" oninput="updateSize()">
+    n=<input type="number" id="size" min="1" max="64" value="20" oninput="updateSize()">
     <input type="button" onclick="updateSize()" value="Random">
+    <input type="button" onclick="makeTree(0)" value="Binary Tree 0">
+    <input type="button" onclick="makeTree(1)" value="Binary Tree 1">
+    <input type="button" onclick="makeTree(2)" value="Binary Tree 2">
+    <input type="button" onclick="makeTree(3)" value="Binary Tree 3">
+    <input type="button" onclick="makeTree(4)" value="Binary Tree 4">
+    <input type="button" onclick="makeTree(5)" value="Binary Tree 5">
   </p>
   <canvas width="1000" height="1000" id="canvas"></canvas>
   <table id="matrix">
