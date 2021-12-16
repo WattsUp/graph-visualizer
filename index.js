@@ -5,6 +5,8 @@ let r = [];
 let rCircle = [];
 let v = [];
 let c = [];
+let cMin = 0;
+let cMax = 0;
 
 let loop = null;
 let modeCircle = true;
@@ -34,7 +36,7 @@ function updateSize() {
       matrix[i][ii] = (r < threshold1) + (r < threshold2);
     }
   }
-  // Diagonalize
+  // Symmetricize
   for (let i = 0; i < n; ++i) {
     for (let ii = i; ii < n; ++ii) {
       let e = matrix[i][ii] + matrix[ii][i];
@@ -171,10 +173,22 @@ function computeEigenvalue() {
     }
     if (err < n * 1e-6) {
       console.log(`Took ${iter} iterations`);
+      cMax = c[0];
+      cMin = c[0];
+      for (let i = 1; i < n; ++i) {
+        cMax = Math.max(cMax, c[i]);
+        cMin = Math.min(cMin, c[i]);
+      }
       return;
     }
   }
   console.log(`Took maximum iterations`);
+  cMax = c[0];
+  cMin = c[0];
+  for (let i = 1; i < n; ++i) {
+    cMax = Math.max(cMax, c[i]);
+    cMin = Math.min(cMin, c[i]);
+  }
 }
 
 function updateTable() {
@@ -279,10 +293,10 @@ function drawEdge(ctx, a, b, offset, n) {
       let d = r_ctx * 1.25;
       if (Math.sign(lineDistance) == 1) d = -d;
       arc = {x: cx + dy / norm * d, y: cy - dx / norm * d};
-      // ctx.strokeStyle =
-      //     tinycolor
-      //         .fromRatio({h: 0, s: (1 - Math.abs(lineDistance) / r_ctx), v:
-      //         1}) .toHexString();
+      ctx.strokeStyle =
+          tinycolor
+              .fromRatio({h: 0, s: (1 - Math.abs(lineDistance) / r_ctx), v: 1})
+              .toHexString();
       break;
     }
     dx = dx / norm;
@@ -343,7 +357,8 @@ function draw() {
     }
     ctx.beginPath();
     ctx.arc(x, y, r_ctx, 0, 2 * Math.PI, false);
-    let color = tinycolor.fromRatio({h: c[i] * 0.5, s: 1.0, v: 0.6});
+    let color = tinycolor.fromRatio(
+        {h: (c[i] - cMin) / (cMax - cMin) * 0.5, s: 1.0, v: 0.6});
     ctx.fillStyle = color.toHexString();
     ctx.fill();
     ctx.fillStyle = 'white';
